@@ -31,12 +31,51 @@ Local<Value> TranslateTimeProfileNode(const CpuProfileNode* node) {
     Nan::New<Integer>(node->GetLineNumber()));
   js_node->Set(Nan::New<String>("columnNumber").ToLocalChecked(),
     Nan::New<Integer>(node->GetColumnNumber()));
+
+  // printf("%s in %s, total ticks: %d\n", node->GetFunctionNameStr(), node->GetScriptResourceNameStr(), node->GetHitCount());
+
   js_node->Set(Nan::New<String>("hitCount").ToLocalChecked(),
     Nan::New<Integer>(node->GetHitCount()));
+
+  unsigned int hitLineCount = node->GetHitLineCount();
+  std::vector<CpuProfileNode::LineTick> entries(hitLineCount);
+
   int32_t count = node->GetChildrenCount();
-  Local<Array> children = Nan::New<Array>(count);
+
+  Local<Array> children;
+  unsigned int index = 0;
+  if (node->GetLineTicks(&entries[0], hitLineCount)) {
+    children = Nan::New<Array>(count + entries.size());
+    js_node->Set(Nan::New<String>("hitCount").ToLocalChecked(),
+      Nan::New<Integer>(0));
+    for (const CpuProfileNode::LineTick entry: entries) {
+      Local<Object> js_node_hit = Nan::New<Object>();
+      js_node_hit->Set(Nan::New<String>("name").ToLocalChecked(),
+        node->GetFunctionName());
+      js_node_hit->Set(Nan::New<String>("scriptName").ToLocalChecked(),
+        node->GetScriptResourceName());
+      js_node_hit->Set(Nan::New<String>("scriptId").ToLocalChecked(),
+        Nan::New<Integer>(node->GetScriptId()));
+      js_node_hit->Set(Nan::New<String>("lineNumber").ToLocalChecked(),
+        Nan::New<Integer>(entry.line));
+      js_node_hit->Set(Nan::New<String>("columnNumber").ToLocalChecked(),
+        Nan::New<Integer>(0));
+      js_node_hit->Set(Nan::New<String>("hitCount").ToLocalChecked(),
+        Nan::New<Integer>(entry.hit_count));
+      js_node_hit->Set(Nan::New<String>("children").ToLocalChecked(),
+        Nan::New<Array>(0));
+        
+      children->Set(index++, js_node_hit);
+
+      // printf("  line %d, ticks %d in %s\n", entry.line, entry.hit_count, node->GetScriptResourceNameStr());
+    }
+  } else {
+    children = Nan::New<Array>(count);
+  }
+
+
   for (int32_t i = 0; i < count; i++) {
-    children->Set(i, TranslateTimeProfileNode(node->GetChild(i)));
+    children->Set(i + index, TranslateTimeProfileNode(node->GetChild(i)));
   }
   js_node->Set(Nan::New<String>("children").ToLocalChecked(),
     children);
