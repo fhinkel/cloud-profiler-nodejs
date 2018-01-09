@@ -206,6 +206,7 @@ function createAllocationValueType(table: StringTable):
  */
 export function serializeTimeProfile(
     prof: TimeProfile, intervalMicros: number): perftools.profiles.IProfile {
+      
   const appendTimeEntryToSamples: AppendEntryToSamples<TimeProfileNode> =
       (entry: Entry<TimeProfileNode>, samples: perftools.profiles.Sample[]) => {
         if (entry.node.hitCount > 0) {

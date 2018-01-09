@@ -19,6 +19,22 @@
 
 using namespace v8;
 
+CpuProfiler* profiler_ = nullptr;
+Isolate* isolate_;
+
+CpuProfiler* profiler(Isolate* isolate) {
+  if (!profiler_) {
+    profiler_ = CpuProfiler::New(isolate);
+    isolate_ = isolate;
+  }
+
+  if (isolate != isolate_) {
+    printf("Different isos\n\n\n\n");
+  }
+  return profiler_;
+}
+
+
 Local<Value> TranslateTimeProfileNode(const CpuProfileNode* node) {
   Local<Object> js_node = Nan::New<Object>();
   js_node->Set(Nan::New<String>("name").ToLocalChecked(),
@@ -64,7 +80,7 @@ Local<Value> TranslateTimeProfileNode(const CpuProfileNode* node) {
         Nan::New<Integer>(entry.hit_count));
       js_node_hit->Set(Nan::New<String>("children").ToLocalChecked(),
         Nan::New<Array>(0));
-        
+
       children->Set(index++, js_node_hit);
 
       // printf("  line %d, ticks %d in %s\n", entry.line, entry.hit_count, node->GetScriptResourceNameStr());
@@ -100,13 +116,13 @@ Local<Value> TranslateTimeProfile(const CpuProfile* profile) {
 NAN_METHOD(StartProfiling) {
   Local<String> name = info[0].As<String>();
   bool record_samples = info[1].As<Boolean>()->BooleanValue();
-  info.GetIsolate()->GetCpuProfiler()->StartProfiling(name, record_samples);
+  profiler(info.GetIsolate())->StartProfiling(name, record_samples);
 }
 
 NAN_METHOD(StopProfiling) {
   Local<String> name = info[0].As<String>();
   CpuProfile* profile =
-    info.GetIsolate()->GetCpuProfiler()->StopProfiling(name);
+    profiler(info.GetIsolate())->StopProfiling(name);
   Local<Value> translated_profile = TranslateTimeProfile(profile);
   profile->Delete();
   info.GetReturnValue().Set(translated_profile);
@@ -114,12 +130,12 @@ NAN_METHOD(StopProfiling) {
 
 NAN_METHOD(SetSamplingInterval) {
   int us = info[0].As<Integer>()->IntegerValue();
-  info.GetIsolate()->GetCpuProfiler()->SetSamplingInterval(us);
+  profiler(info.GetIsolate())->SetSamplingInterval(us);
 }
 
 NAN_METHOD(SetIdle) {
   bool is_idle = info[0].As<Boolean>()->BooleanValue();
-  info.GetIsolate()->GetCpuProfiler()->SetIdle(is_idle);
+  profiler(info.GetIsolate())->SetIdle(is_idle);
 }
 
 NAN_MODULE_INIT(InitAll) {
