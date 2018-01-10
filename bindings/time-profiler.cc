@@ -48,7 +48,7 @@ Local<Value> TranslateTimeProfileNode(const CpuProfileNode* node) {
   js_node->Set(Nan::New<String>("columnNumber").ToLocalChecked(),
     Nan::New<Integer>(node->GetColumnNumber()));
 
-  // printf("%s in %s, total ticks: %d\n", node->GetFunctionNameStr(), node->GetScriptResourceNameStr(), node->GetHitCount());
+  printf("%s in %s, total ticks: %d\n", node->GetFunctionNameStr(), node->GetScriptResourceNameStr(), node->GetHitCount());
 
   js_node->Set(Nan::New<String>("hitCount").ToLocalChecked(),
     Nan::New<Integer>(node->GetHitCount()));

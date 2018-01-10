@@ -31,6 +31,18 @@ function outer() {
     sum += inner({b: 2, z: 4, x: 1}, upper_bound);
 
 
+    let res = 0;
+    for(let i = 0; i < 1; i++) {
+        res += objects[0].x;
+    }
+    sum += res;
+
+    
+    for(let i = 0; i < upper_bound; i++) {
+        res += objects[0].x;
+    }
+    sum += res;
+
     setImmediate(outer);
 }
 
