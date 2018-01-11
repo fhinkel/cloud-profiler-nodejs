@@ -8,12 +8,20 @@ function inner(obj, count = 1){
     return res;
 }
 
+function middle1(obj, count) {
+    inner(obj, count);
+}
+
+function middle2(obj, count) {
+    inner(obj, count);
+}
+
 function outer() {
     let sum = 0;
     const upper_bound = 10000;
 
     if (false) {
-        sum += inner({b: 2, z: 4, x: 1}, upper_bound);
+        sum += middle1({b: 2, z: 4, x: 1}, upper_bound);
     }
 
     let obj = {x: 1};
@@ -23,7 +31,8 @@ function outer() {
     }
 
     if (true) {
-        sum += inner({b: 2, z: 4, x: 1}, upper_bound);
+        sum += middle1({b: 2, z: 4, x: 1}, upper_bound);
+        sum += middle2({b: 2, z: 4, x: 1}, upper_bound);
     }
 
     let total = sum + res;
