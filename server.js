@@ -10,10 +10,7 @@ function inner(obj, count = 1){
 
 function outer() {
     const upper_bound = 10000;
-    let sum = 0;
-
-    sum += inner({x: 1});
-
+    let total = 0;
 
     let objects = [
         {x: 1},
@@ -24,24 +21,16 @@ function outer() {
         {b: 2, z: 4, x: 1}
     ];
 
-    for (let obj of objects) {
-        sum += obj.x;
-    }
-
-    sum += inner({b: 2, z: 4, x: 1}, upper_bound);
-
+    let obj = objects[0];
 
     let res = 0;
-    for(let i = 0; i < 1; i++) {
-        res += objects[0].x;
-    }
-    sum += res;
-
-    
     for(let i = 0; i < upper_bound; i++) {
-        res += objects[0].x;
+        res += obj.x;
     }
-    sum += res;
+
+    let sum = inner({b: 2, z: 4, x: 1}, upper_bound);
+
+    total += sum + res;
 
     setImmediate(outer);
 }

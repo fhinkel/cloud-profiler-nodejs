@@ -39,6 +39,7 @@ export class TimeProfiler {
     profiler.startProfiling(runName, true);
     await delay(durationMillis);
     const result = profiler.stopProfiling(runName);
+    // console.log("An interval in micro seconds: " + this.intervalMicros);
     return serializeTimeProfile(result, this.intervalMicros);
   }
 }
