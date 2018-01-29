@@ -9,6 +9,10 @@ function inner(obj, count = 1){
 }
 
 function middle1(obj, count) {
+    // and
+    // here
+    // is some 
+    // line number.
     inner(obj, count);
 }
 
@@ -20,14 +24,13 @@ function outer() {
     let sum = 0;
     const upper_bound = 10000;
 
-    if (false) {
-        sum += middle1({b: 2, z: 4, x: 1}, upper_bound);
-    }
-
     let obj = {x: 1};
     let res = 0;
-    for(let i = 0; i < upper_bound; i++) {
-        res += obj.x;
+
+    sum += middle1({b: 2, z: 4, x: 1}, upper_bound);
+
+    if (false) {
+        sum += middle1({b: 2, z: 4, x: 1}, upper_bound);
     }
 
     if (true) {
@@ -35,10 +38,16 @@ function outer() {
         sum += middle2({b: 2, z: 4, x: 1}, upper_bound);
     }
 
+    for(let i = 0; i < upper_bound; i++) {
+        res += obj.x;
+    }
+
+
     let total = sum + res;
     if (total === 17) {
         console.log(total);
     }
+    // setTimeout(outer, 0);
     setImmediate(outer);
 }
 

@@ -29,7 +29,7 @@ CpuProfiler* profiler(Isolate* isolate) {
   }
 
   if (isolate != isolate_) {
-    printf("Different isos\n\n\n\n");
+    printf("Different isolate\n\n\n\n");
   }
   return profiler_;
 }
@@ -56,15 +56,14 @@ Local<Value> TranslateTimeProfileNode(const CpuProfileNode* node) {
   unsigned int hitLineCount = node->GetHitLineCount();
   std::vector<CpuProfileNode::LineTick> entries(hitLineCount);
 
-  int32_t count = node->GetChildrenCount();
-
-  Local<Array> children = Nan::New<Array>(count);
   if (node->GetLineTicks(&entries[0], hitLineCount)) {
     for (const CpuProfileNode::LineTick entry: entries) {
       printf("  line %d, ticks %d in %s\n", entry.line, entry.hit_count, node->GetFunctionNameStr());
     }
   } 
 
+  int32_t count = node->GetChildrenCount();
+  Local<Array> children = Nan::New<Array>(count);
   for (int32_t i = 0; i < count; i++) {
     children->Set(i, TranslateTimeProfileNode(node->GetChild(i)));
   }
